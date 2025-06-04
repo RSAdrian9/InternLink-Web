@@ -15,6 +15,10 @@ import * as directives from 'vuetify/directives'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@fortawesome/fontawesome-free/js/all.js'
 
+/* Import Toastification */
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+
 // Vuetify theme setup (opcional)
 const vuetify = createVuetify({
   components,
@@ -32,5 +36,6 @@ const vuetify = createVuetify({
 const app = createApp(App)
 app.use(vuetify)
 app.use(createPinia())
+app.use(Toast)
 app.use(router)
 app.mount('#app')
