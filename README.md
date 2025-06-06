@@ -15,11 +15,17 @@ Aplicación web frontend interactiva desarrollada con  **Vue.js 3** , **Pinia** 
 ## **📌 Tecnologías Utilizadas**
 
 🔹 **Vue.js 3** – Framework progresivo para la construcción de interfaces de usuario interactivas.
+
 🔹 **Pinia** – Gestor de estado ligero y tipado para Vue 3, optimizado para la Composition API.
+
 🔹 **Vuetify 3** – Framework de componentes de UI basado en Material Design, para una interfaz consistente y responsiva.
+
 🔹 **Vite** – Herramienta de compilación rápida para proyectos Vue.js, optimizando el entorno de desarrollo.
+
 🔹 **TypeScript** – Lenguaje de programación que añade tipado estático a JavaScript, mejorando la robustez y mantenibilidad del código.
+
 🔹 **Axios** – Cliente HTTP basado en promesas para la comunicación con la API RESTful.
+
 🔹 **Vue Router** – Sistema de enrutamiento para Single Page Applications (SPAs) en Vue.js.
 
 ## **🏗️ Arquitectura del Frontend**
@@ -63,8 +69,8 @@ Para levantar el entorno de desarrollo del frontend, asegúrate de tener el back
 ```
 
 # Clonar el repositorio
-git clone https://github.com/RSAdrian9/ProjectSchoolStudent-Front-end.git
-cd ProjectSchoolStudent-Front-end
+git clone https://github.com/RSAdrian9/InternLink-Web.git
+cd InternLink-Web
 
 # Instalar dependencias de Node.js
 npm install # o yarn install
@@ -79,13 +85,11 @@ npm run dev # o yarn dev
 La aplicación estará disponible en tu navegador, generalmente en http://localhost:5173
 ```
 
-
 ## **🔗 Vínculo con el Backend**
 
 Este proyecto frontend consume la API RESTful proporcionada por el siguiente repositorio de backend:
 
 [📁 InternLink Back-end: Ver en GitHub](https://github.com/RSAdrian9/InternLink-API)
-
 
 ## 👨‍💻 **Autor**
 
