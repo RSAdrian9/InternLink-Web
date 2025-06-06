@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import type { User } from '@/types/User';
-import { loginUser, registerUser, logoutUser, getCurrentUserProfile, type AuthResponse } from '@/services/AuthService';
+import { loginUser, registerUser, logoutUser, getCurrentUserProfile, type AuthResponse } from '@/services/authService';
 
 interface State {
   currentUser: User | null;

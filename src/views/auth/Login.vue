@@ -43,7 +43,6 @@
                       ></v-text-field>
 
                       <div class="d-flex justify-space-between align-center mb-6">
-                        <v-checkbox v-model="rememberMe" label="Recordarme" color="primary" hide-details></v-checkbox>
                         <v-btn variant="text" color="primary" density="compact">
                           ¿Olvidaste tu contraseña?
                         </v-btn>
@@ -72,7 +71,7 @@
                   <div class="text-center pa-8 text-white">
                     <h3 class="text-h4 font-weight-bold mb-4">¿Nuevo en InternLink?</h3>
                     <p class="text-body-1 mb-8">
-                      Únete a nuestra plataforma y comienza a conectar con escuelas, estudiantes y empresas.
+                      Únete a nuestra plataforma y comienza a conectar con institutos, estudiantes y empresas.
                     </p>
                     <v-btn size="large" variant="outlined" color="white" @click="changeStep(2)" class="px-8">
                       Crear cuenta
@@ -205,24 +204,17 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
-import { showToast } from '@/composables/useToast'; // Asegúrate de que este composable exista y funcione
+import { showToast } from '@/composables/useToast';
 
 const authStore = useAuthStore();
 const router = useRouter();
 
-// Controla el panel actual (1 para Login, 2 para Registro)
 const step = ref(1);
-
-// Referencias a los formularios para validación de Vuetify
 const loginFormRef = ref(null);
 const registerFormRef = ref(null);
-
-// --- Login Form State ---
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
-const rememberMe = ref(false);
-
 // --- Register Form State ---
 const firstName = ref('');
 const lastName = ref('');
@@ -237,26 +229,21 @@ const emailRules = [
   v => !!v || 'El correo electrónico es requerido',
   v => /.+@.+\..+/.test(v) || 'El correo electrónico debe ser válido',
 ];
-
 const passwordRules = [
   v => !!v || 'La contraseña es requerida',
 ];
-
 const registerPasswordRules = [
   v => !!v || 'La contraseña es requerida',
   v => v?.length >= 8 || 'La contraseña debe tener al menos 8 caracteres',
 ];
-
 const confirmPasswordRules = [
   v => !!v || 'Confirma tu contraseña',
   v => v === registerPassword.value || 'Las contraseñas no coinciden',
 ];
 
 // --- Form Handlers ---
-
 const changeStep = (newStep) => {
   step.value = newStep;
-  // Limpiar errores del store y campos al cambiar de vista
   authStore.error = null;
   email.value = '';
   password.value = '';
@@ -268,36 +255,29 @@ const changeStep = (newStep) => {
   acceptTerms.value = false;
   showPassword.value = false;
   showRegisterPassword.value = false;
-  // Resetear la validación de los formularios de Vuetify si es posible (no siempre es necesario pero buena práctica)
   if (loginFormRef.value) loginFormRef.value.resetValidation();
   if (registerFormRef.value) registerFormRef.value.resetValidation();
 };
 
 const handleLogin = async () => {
-  // Disparar la validación del formulario de Vuetify
   const { valid } = await loginFormRef.value.validate();
   if (!valid) return;
 
-  // Si ya está cargando, no hacer nada (el botón ya está deshabilitado por :loading)
   if (authStore.isLoading) return;
 
-  // Lógica de Login
   const success = await authStore.login(email.value, password.value);
   if (success) {
     showToast('Sesión iniciada correctamente.', 'success');
     router.push('/dashboard');
   } else {
-    // El error ya está en authStore.error, showToast podría usarlo directamente
     showToast(authStore.error || 'Error desconocido al iniciar sesión.', 'error');
   }
 };
 
 const handleRegister = async () => {
-  // Disparar la validación del formulario de Vuetify
   const { valid } = await registerFormRef.value.validate();
   if (!valid) return;
 
-  // Validaciones adicionales antes de enviar (contraseñas coinciden, términos aceptados)
   if (registerPassword.value !== confirmPassword.value) {
     showToast('Las contraseñas no coinciden.', 'error');
     return;
@@ -307,13 +287,10 @@ const handleRegister = async () => {
     return;
   }
 
-  // Si ya está cargando, no hacer nada
   if (authStore.isLoading) return;
 
-  // Construir el nombre completo para el backend
   const fullName = `${firstName.value} ${lastName.value}`;
 
-  // Lógica de Registro
   const success = await authStore.register(fullName, registerEmail.value, registerPassword.value);
   if (success) {
     showToast('Registro exitoso. ¡Bienvenido!', 'success');
@@ -338,19 +315,6 @@ const handleRegister = async () => {
   border-bottom-right-radius: 100px !important;
 }
 
-/* Considera si necesitas estos estilos. Vuetify maneja la división por sí mismo. */
-/*
-.v-divider {
-  position: relative;
-}
-
-.v-divider span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-*/
 .text-error {
   color: #dc3545; /* Color rojo de error */
   margin-top: 5px;
