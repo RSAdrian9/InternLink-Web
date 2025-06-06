@@ -1,131 +1,118 @@
-// stores/userStore.ts
+// src/stores/userStore.ts
 import { defineStore } from 'pinia';
-import type { User } from '@/types/User';
-import { getUserById, updateUser, deleteUser, getAllUsers } from '@/services/userService'; // Importa de userService
-import { useAuthStore } from './authStore';
+import { userService } from '@/services/userService';
+import type { User, UserRole, CreateUserDTO, UpdateUserDTO } from '@/types/User';
 
 interface UserState {
   users: User[];
-  selectedUser: User | null;
   isLoading: boolean;
   error: string | null;
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
-    users: [],
-    selectedUser: null,
+    users: [], // Inicializado correctamente como un array vacío
     isLoading: false,
     error: null,
   }),
 
   getters: {
-    // Puedes tener getters para filtrar o transformar la lista de usuarios
-    activeUsers: (state) => state.users.filter(user => user.email_verified_at !== null),
-    // getOtherUsers: (state) => state.users.filter(user => user.id !== useAuthStore().currentUserId),
+    // Estos getters esperan que 'state.users' SIEMPRE sea un array
+    getStudents: (state) => state.users.filter(user => user.role === 'Student'),
+    getTutors: (state) => state.users.filter(user => user.role === 'Tutor'),
+    getUserById: (state) => (id: number) => state.users.find(user => user.id === id),
+    // Añade un getter para filtrar por rol
+    getStudentsCount(state) {
+      return state.users.filter(user => user.role === 'Student').length;
+    },
+    getTutorsCount(state) {
+      return state.users.filter(user => user.role === 'Tutor').length;
+    },
   },
 
   actions: {
-    async fetchAllUsers(): Promise<boolean> {
+    async fetchAllUsers() {
       this.isLoading = true;
       this.error = null;
       try {
-        const users = await getAllUsers();
-        this.users = users;
-        return true;
-      } catch (error: any) {
-        this.error = error.message || 'Error al cargar la lista de usuarios.';
-        console.error('User Store - Failed to fetch all users:', error);
-        return false;
+        const data = await userService.getAllUsers();
+        // IMPORTANTE: Aseguramos que 'data' sea un array. Si no lo es, asignamos un array vacío.
+        this.users = Array.isArray(data) ? data : [];
+      } catch (err: any) {
+        this.error = err.message || 'Error al cargar todos los usuarios.';
+        console.error('Error fetching all users:', err);
+        this.users = []; // También, si hay un error, reseteamos a un array vacío
       } finally {
         this.isLoading = false;
       }
     },
 
-    async fetchUserById(id: number): Promise<boolean> {
+    async fetchUsersByRole(role: UserRole) {
       this.isLoading = true;
       this.error = null;
       try {
-        const user = await getUserById(id);
-        this.selectedUser = user;
-        // Opcional: Actualizar la lista 'users' si el usuario ya existe en ella
-        const index = this.users.findIndex(u => u.id === user.id);
+        const data = await userService.getUsersByRole(role);
+        // IMPORTANTE: Aseguramos que 'data' sea un array. Si no lo es, asignamos un array vacío.
+        this.users = Array.isArray(data) ? data : [];
+      } catch (err: any) {
+        this.error = err.message || `Error al cargar usuarios con rol ${role}.`;
+        console.error(`Error fetching users with role ${role}:`, err);
+        this.users = []; // También, si hay un error, reseteamos a un array vacío
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    // El resto de tus acciones (addUser, updateExistingUser, deleteUser) no necesitan esta comprobación
+    // porque esperan un objeto User individual como retorno o manipulan this.users directamente.
+    async addUser(userData: CreateUserDTO) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const newUser = await userService.createUser(userData);
+        this.users.push(newUser);
+        return newUser;
+      } catch (err: any) {
+        this.error = err.message || 'Error al añadir usuario.';
+        console.error('Error adding user:', err);
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async updateExistingUser(id: number, userData: UpdateUserDTO) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        const updatedUser = await userService.updateUser(id, userData);
+        const index = this.users.findIndex(u => u.id === updatedUser.id);
         if (index !== -1) {
-            this.users[index] = user;
-        } else {
-            // Si el usuario no estaba en la lista, lo añades (o lo ignoras si solo es para `selectedUser`)
-            // this.users.push(user);
+          this.users[index] = updatedUser;
         }
-        return true;
-      } catch (error: any) {
-        this.error = error.message || `Error al cargar usuario con ID ${id}.`;
-        console.error('User Store - Failed to fetch user by ID:', error);
-        return false;
+        return updatedUser;
+      } catch (err: any) {
+        this.error = err.message || 'Error al actualizar usuario.';
+        console.error('Error updating user:', err);
+        throw err;
       } finally {
         this.isLoading = false;
       }
     },
 
-    async updateSelectedUser(userData: Partial<User>): Promise<boolean> {
-        if (!this.selectedUser?.id) {
-            this.error = "No hay usuario seleccionado para actualizar.";
-            return false;
-        }
-        this.isLoading = true;
-        this.error = null;
-        try {
-            const updatedUser = await updateUser(this.selectedUser.id, userData);
-            this.selectedUser = updatedUser; // Actualiza el usuario seleccionado
-
-            // Actualiza también la lista `users` si el usuario está presente
-            const index = this.users.findIndex(u => u.id === updatedUser.id);
-            if (index !== -1) {
-                this.users[index] = updatedUser;
-            }
-
-            // Si el usuario actualizado es el usuario autenticado, ¡actualiza el authStore también!
-            const authStore = useAuthStore();
-            if (authStore.currentUser?.id === updatedUser.id) {
-                authStore.updateCurrentUserData(updatedUser); // Usa la acción del authStore
-            }
-
-            return true;
-        } catch (error: any) {
-            this.error = error.message || `Error al actualizar usuario con ID ${this.selectedUser.id}.`;
-            console.error('User Store - Failed to update user:', error);
-            return false;
-        } finally {
-            this.isLoading = false;
-        }
+    async deleteUser(id: number) {
+      this.isLoading = true;
+      this.error = null;
+      try {
+        await userService.deleteUser(id);
+        this.users = this.users.filter(user => user.id !== id);
+      } catch (err: any) {
+        this.error = err.message || 'Error al eliminar usuario.';
+        console.error('Error deleting user:', err);
+        throw err;
+      } finally {
+        this.isLoading = false;
+      }
     },
-    
-    async deleteUser(userId: number): Promise<boolean> {
-        this.isLoading = true;
-        this.error = null;
-        try {
-            await deleteUser(userId);
-            this.users = this.users.filter(user => user.id !== userId); // Elimina de la lista
-            if (this.selectedUser?.id === userId) {
-                this.selectedUser = null; // Si era el seleccionado, lo deseleccionamos
-            }
-            // Si el usuario eliminado es el usuario autenticado, ¡también lo deslogueamos!
-            const authStore = useAuthStore();
-            if (authStore.currentUser?.id === userId) {
-                authStore.logout(); // Llama a la acción de logout del authStore
-            }
-            return true;
-        } catch (error: any) {
-            this.error = error.message || `Error al eliminar usuario con ID ${userId}.`;
-            console.error('User Store - Failed to delete user:', error);
-            return false;
-        } finally {
-            this.isLoading = false;
-        }
-    },
-
-    // Limpia el usuario seleccionado
-    clearSelectedUser() {
-      this.selectedUser = null;
-    }
   },
 });
