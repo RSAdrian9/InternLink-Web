@@ -6,7 +6,7 @@
           InternLink: Conectando Talento y Oportunidades
         </h1>
         <p class="text-h5 text-white mb-8">
-          Tu plataforma integral para prácticas profesionales, uniendo estudiantes, escuelas y empresas.
+          Tu plataforma integral para prácticas profesionales, uniendo estudiantes, institutos y empresas.
         </p>
         <v-btn
           color="primary"
@@ -44,7 +44,7 @@
           <v-col cols="12" md="4">
             <v-card class="pa-6 elevation-3">
               <v-icon size="60" color="primary" class="mb-4">fa-solid fa-school</v-icon>
-              <v-card-title class="text-h6 font-weight-bold">Para Escuelas</v-card-title>
+              <v-card-title class="text-h6 font-weight-bold">Para Institutos</v-card-title>
               <v-card-text>
                 Optimiza la gestión de prácticas de tus alumnos, facilita la conexión con empresas y sigue su progreso.
               </v-card-text>
