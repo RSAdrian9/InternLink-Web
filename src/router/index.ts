@@ -9,6 +9,7 @@ import Profile from '@/views/Profile.vue'
 import Settings from '@/views/Settings.vue'
 import Login from '@/views/auth/Login.vue'
 import { useAuthStore } from '@/stores/authStore';
+import InternshipAssignment from '@/views/InternshipAssignment.vue'
 
 const routes = [
   {
@@ -27,43 +28,49 @@ const routes = [
     path: '/schools',
     name: 'schools',
     component: School,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Gestión de Institutos'}
   },
   {
     path: '/tutors',
     name: 'tutors',
     component: Tutor,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Gestión de Tutores'}
   },
   {
     path: '/students',
     name: 'students',
     component: Student,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Gestión de Estudiantes'}
   },
   {
     path: '/companies',
     name: 'companies',
     component: Company,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Gestión de Empresas' }
+  },
+  {
+    path: '/internshipassignment',
+    name: 'internshipassignment',
+    component: InternshipAssignment,
+    meta: { requiresAuth: true, title: 'Gestión de Prácticas' }
   },
   {
     path: '/profile',
     name: 'profile',
     component: Profile,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Perfil de Usuario' }
   },
   {
     path: '/settings',
     name: 'settings',
     component: Settings,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, title: 'Configuración' }
   },
   {
     path: '/login',
     name: 'login',
     component: Login,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, title: 'Iniciar Sesión' }
   },
 ]
 
