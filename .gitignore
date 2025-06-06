@@ -12,6 +12,7 @@ lerna-debug.log*
 .env.backup
 .env.production
 
+*.puml
 node_modules
 .DS_Store
 dist
