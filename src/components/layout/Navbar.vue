@@ -45,9 +45,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '../../stores/authStore';
 import { useRouter } from 'vue-router';
-import { showToast } from '@/composables/useToast';
+import { showToast } from '../../composables/useToast';
 
 const authStore = useAuthStore();
 const router = useRouter();

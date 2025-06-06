@@ -5,7 +5,7 @@
 
     <v-main>
       <!-- <v-container fluid :class="{ 'pl-16': showFullLayout }"> -->
-        <router-view />
+        <router-view :key="$route.fullPath" />
       <!-- </v-container> -->
     </v-main>
   </v-app>
